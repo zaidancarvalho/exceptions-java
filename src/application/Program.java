@@ -36,17 +36,12 @@ public class Program {
 			checkIn = sdf.parse(sc.next());
 			System.out.print("Check-out date (dd/MM/yyyy): ");
 			checkOut = sdf.parse(sc.next());
-			
-			Date now = new Date();
-			if (checkIn.before(now) || checkOut.before(now) ) {
-				System.out.println("Error in reservation: Reservation dates for update must be future dates");
+		
+			String error =	reservation.updateDates(checkIn, checkOut);
+			if (error != null) { // se o valor for difenrete de null será impresso o erro que ocorreu
+				System.out.println("Error in reservation: " + error);
 			}
-			//		se a data de checkou não for posterior a data de checkin, eu não posso aceitar também
-			else if (!checkOut.after(checkIn)) {
-				System.out.println("Error in reservation: Check-out date must be after check-in date");
-			}
-			else {//caso nenhum desses problemas tenha aconteceido, irei atualizar minha reserva
-			reservation.updateDates(checkIn, checkOut);
+			else { // se não, irá imprimir a reserva 
 			System.out.println("Reservation: " + reservation);
 			}	
 		}
