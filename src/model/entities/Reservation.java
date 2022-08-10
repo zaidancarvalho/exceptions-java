@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import model.exceptions.DomainException;
+
 public class Reservation {
 
 	private Integer roombNumber;
@@ -13,7 +15,11 @@ public class Reservation {
 	//aqui foi realziado como static porque preciso somente um, por isso, foi selecionado como static (só quero nesswe objeto)
 	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
-	public Reservation(Integer roombNumber, Date checkIn, Date checkOut) {
+	public Reservation(Integer roombNumber, Date checkIn, Date checkOut){
+		//se a data de checkou não for posterior a data de checkin, eu não posso aceitar também
+		if(!checkOut.after(checkIn)) {
+			throw new DomainException("Check-out date must be after check-in date") ;
+		}
 		this.roombNumber = roombNumber;
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
@@ -41,19 +47,14 @@ public class Reservation {
 		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS); // aqui é feito o calculo em dias com base nas duas datas
 	}
 	
-	public String updateDates(Date checkIn, Date checkOut) { // foi delegado a lógica de programação para a classe Reservation
+	public void updateDates(Date checkIn, Date checkOut) { // foi delegado a lógica de programação para a classe Reservation
 		Date now = new Date();
-		if (checkIn.before(now) || checkOut.before(now) ) {
-			return "Reservation dates for update must be future dates";
-		}
-		//		se a data de checkou não for posterior a data de checkin, eu não posso aceitar também
-		if(!checkOut.after(checkIn)) {
-			return "Check-out date must be after check-in date";
+		if (checkIn.before(now) || checkOut.before(now) ) { //aqui foi realizado o tratamento da exceção personalizado
+			throw new DomainException("Reservation dates for update must be future dates");
 		}
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
 		//fazendo receber como argumento para realizar o updateDates
-		return null; // o null é um criterio para informar que a operação não deu nenhum erro, se retornar alguma String é porque deu erro
 	}
 	
 	@Override
